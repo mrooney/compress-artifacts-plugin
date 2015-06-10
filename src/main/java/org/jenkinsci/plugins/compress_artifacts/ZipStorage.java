@@ -69,6 +69,15 @@ final class ZipStorage extends VirtualFile {
 
     // TODO support updating entries
     static void archive(File archive, FilePath workspace, Launcher launcher, BuildListener listener, Map<String,String> artifacts) throws IOException, InterruptedException {
+        // if the artifact is a single zip, skip compressing it so it is browsable in the UI.
+        if (artifacts.size() == 1) {
+            String artifact = artifacts.entrySet().iterator().next().getKey();
+            if (artifact.endsWith(".zip")) {
+                workspace.child(artifact).copyTo(new FilePath(archive));
+                return;
+            }
+        }
+
         // Use temporary file for writing, rename when done
         File tempArchive = new File(archive.getAbsolutePath() + ".writing.zip");
 
